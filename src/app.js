@@ -1,8 +1,9 @@
 const express = require('express')
-require('../db/DbConfig')
+require('./db/DbConfig')
 require('dotenv').config();
 const cors = require('cors')
 const morgan = require('morgan')
+const userRouter = require('./routes/User')
 
 const app = express()
 app.use(express.json())
@@ -11,6 +12,9 @@ app.use(express.json())
 app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 app.use('/public', express.static('public'))
+
+// Ruoters
+app.use(userRouter)
 
 app.use((error, req, res, next) => {
   console.error(error.stack)
