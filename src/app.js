@@ -22,7 +22,7 @@ app.use((error, req, res, next) => {
   res.json({
     error: {
       status: error.status || 500,
-      message: error.message
+      error: error.message
     }
   })
 })
