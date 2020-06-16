@@ -9,7 +9,7 @@ mongoose
         useFindAndModify: false
     })
     .then(db => {
-        console.log('Successfully connected to MongodB server')
+        console.log('Successfully connected to MongoDB server')
     })
     .catch(err => {
         console.log(err)
