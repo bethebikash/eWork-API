@@ -14,6 +14,12 @@ const roleSchema = new mongoose.Schema(
   }
 )
 
+userSchema.virtual('Users', {
+  ref: 'User',
+  localField: '_id',
+  foreignField: 'role'
+})
+
 const Role = mongoose.model('Role', roleSchema)
 
 module.exports = Role

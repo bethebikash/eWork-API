@@ -12,6 +12,12 @@ const skillSchema = new mongoose.Schema(
   }
 )
 
+userSchema.virtual('Users', {
+  ref: 'User',
+  localField: '_id',
+  foreignField: 'skills'
+})
+
 const Skill = mongoose.model('Skill', skillSchema)
 
 module.exports = Skill

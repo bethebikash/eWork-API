@@ -49,17 +49,18 @@ const userSchema = new mongoose.Schema(
       default: ''
     },
     role: {
-      type: String,
-      default: ''
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Role'
     },
-    skills: {
-      type: String,
-      default: ''
-    },
-    technology: {
-      type: String,
-      default: ''
-    },
+    skills: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Skill'
+    }],
+    technologies: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Technology'
+    }],
     paymentProfile: {
       type: String,
       default: ''
