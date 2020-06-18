@@ -60,16 +60,24 @@ const userSchema = new mongoose.Schema(
     technologies: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Technology'
-    }],
-    paymentProfile: {
-      type: String,
-      default: ''
-    }
+    }]
   },
   {
     timestamps: true
   }
 )
+
+userSchema.virtual('Jobs', {
+  ref: 'Job',
+  localField: '_id',
+  foreignField: 'posted_by'
+})
+
+userSchema.virtual('Jobs', {
+  ref: 'Job',
+  localField: '_id',
+  foreignField: 'taken_by'
+})
 
 // Hashing the plain text password before saving.
 userSchema.pre('save', async function(next) {
