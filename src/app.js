@@ -5,6 +5,7 @@ const cors = require('cors')
 const morgan = require('morgan')
 const userRouter = require('./routes/User')
 const jobRouter = require('./routes/Job')
+const bidRouter = require('./routes/Bid')
 
 const app = express()
 app.use(express.json())
@@ -17,6 +18,7 @@ app.use('/public', express.static('public'))
 // Ruoters
 app.use(userRouter)
 app.use(jobRouter)
+app.use(bidRouter)
 
 app.use((error, req, res, next) => {
   console.error(error.stack)

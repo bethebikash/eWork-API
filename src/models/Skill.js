@@ -12,7 +12,7 @@ const skillSchema = new mongoose.Schema(
   }
 )
 
-userSchema.virtual('Users', {
+skillSchema.virtual('Users', {
   ref: 'User',
   localField: '_id',
   foreignField: 'skills'

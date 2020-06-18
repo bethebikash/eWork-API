@@ -12,7 +12,7 @@ const technologySchema = new mongoose.Schema(
   }
 )
 
-userSchema.virtual('Users', {
+technologySchema.virtual('Users', {
   ref: 'User',
   localField: '_id',
   foreignField: 'technologies'

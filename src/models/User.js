@@ -79,6 +79,12 @@ userSchema.virtual('Jobs', {
   foreignField: 'taken_by'
 })
 
+userSchema.virtual('Bids', {
+  ref: 'Bid',
+  localField: '_id',
+  foreignField: 'bidder'
+})
+
 // Hashing the plain text password before saving.
 userSchema.pre('save', async function(next) {
   const user = this

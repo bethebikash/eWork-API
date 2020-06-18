@@ -34,6 +34,12 @@ const jobSchema = new mongoose.Schema(
   }
 )
 
+jobSchema.virtual('Bids', {
+  ref: 'Bid',
+  localField: '_id',
+  foreignField: 'job'
+})
+
 const Job = mongoose.model('Job', jobSchema)
 
 module.exports = Job

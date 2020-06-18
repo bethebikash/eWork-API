@@ -14,7 +14,7 @@ const roleSchema = new mongoose.Schema(
   }
 )
 
-userSchema.virtual('Users', {
+roleSchema.virtual('Users', {
   ref: 'User',
   localField: '_id',
   foreignField: 'role'
