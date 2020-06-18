@@ -52,20 +52,18 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'Role'
-    },
-    skills: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Skill'
-    }],
-    technologies: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Technology'
-    }]
+    }
   },
   {
     timestamps: true
   }
 )
+
+userSchema.virtual('WorkProfiles', {
+  ref: 'WorkProfile',
+  localField: '_id',
+  foreignField: 'benongs_to'
+})
 
 userSchema.virtual('Jobs', {
   ref: 'Job',

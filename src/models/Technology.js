@@ -12,10 +12,10 @@ const technologySchema = new mongoose.Schema(
   }
 )
 
-technologySchema.virtual('Users', {
-  ref: 'User',
+technologySchema.virtual('WorkProfiles', {
+  ref: 'WorkProfile',
   localField: '_id',
-  foreignField: 'technologies'
+  foreignField: 'skills'
 })
 
 const Technology = mongoose.model('Technology', technologySchema)

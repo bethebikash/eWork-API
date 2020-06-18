@@ -12,8 +12,8 @@ const skillSchema = new mongoose.Schema(
   }
 )
 
-skillSchema.virtual('Users', {
-  ref: 'User',
+skillSchema.virtual('WorkProfiles', {
+  ref: 'WorkProfile',
   localField: '_id',
   foreignField: 'skills'
 })
