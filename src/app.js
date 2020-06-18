@@ -4,6 +4,8 @@ require('dotenv').config();
 const cors = require('cors')
 const morgan = require('morgan')
 const userRouter = require('./routes/User')
+const skillRouter = require('./routes/Skill')
+const technologyRouter = require('./routes/Technology')
 const jobRouter = require('./routes/Job')
 const bidRouter = require('./routes/Bid')
 
@@ -17,6 +19,8 @@ app.use('/public', express.static('public'))
 
 // Ruoters
 app.use(userRouter)
+app.use(skillRouter)
+app.use(technologyRouter)
 app.use(jobRouter)
 app.use(bidRouter)
 
