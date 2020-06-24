@@ -3,7 +3,7 @@ const router = new express.Router()
 const Technology = require('../models/Technology')
 
 // to create a technology
-router.post('/technoloies', async (req, res) => {
+router.post('/technologies', async (req, res) => {
   const technology = new Technology(req.body)
   try {
     await technology.save()

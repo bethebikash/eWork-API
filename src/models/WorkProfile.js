@@ -1,8 +1,6 @@
 const mongoose = require('mongoose')
-const validator = require('validator')
-const bcrypt = require('bcryptjs')
 
-const userSchema = new mongoose.Schema(
+const workProfileSchema = new mongoose.Schema(
   {
     rate: {
       type: Number,
@@ -28,6 +26,6 @@ const userSchema = new mongoose.Schema(
   }
 )
 
-const User = mongoose.model('User', userSchema)
+const WorkProfile = mongoose.model('WorkProfile', workProfileSchema)
 
-module.exports = User
+module.exports = WorkProfile
