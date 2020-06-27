@@ -83,6 +83,17 @@ userSchema.virtual('Bids', {
   foreignField: 'bidder'
 })
 
+// sending only necessary data from user collection.
+userSchema.methods.toJSON = function() {
+  const user = this
+  const userObject = user.toObject()
+  delete userObject.password
+  delete userObject.createdAt
+  delete userObject.updatedAt
+  delete userObject.__v
+  return userObject
+}
+
 // Hashing the plain text password before saving.
 userSchema.pre('save', async function(next) {
   const user = this

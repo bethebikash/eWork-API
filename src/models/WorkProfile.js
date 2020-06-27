@@ -26,6 +26,16 @@ const workProfileSchema = new mongoose.Schema(
   }
 )
 
+// sending only necessary data from category collection.
+workProfileSchema.methods.toJSON = function() {
+  const workProfile = this
+  const workProfileObject = workProfile.toObject()
+  delete workProfileObject.createdAt
+  delete workProfileObject.updatedAt
+  delete workProfileObject.__v
+  return workProfileObject
+}
+
 const WorkProfile = mongoose.model('WorkProfile', workProfileSchema)
 
 module.exports = WorkProfile
