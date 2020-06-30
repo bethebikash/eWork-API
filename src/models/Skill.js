@@ -18,6 +18,16 @@ skillSchema.virtual('WorkProfiles', {
   foreignField: 'skills'
 })
 
+// sending only necessary data from user collection.
+skillSchema.methods.toJSON = function () {
+  const skill = this
+  const skillObject = skill.toObject()
+  delete skillObject.createdAt
+  delete skillObject.updatedAt
+  delete skillObject.__v
+  return skillObject
+}
+
 const Skill = mongoose.model('Skill', skillSchema)
 
 module.exports = Skill
