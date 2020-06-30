@@ -18,6 +18,16 @@ technologySchema.virtual('WorkProfiles', {
   foreignField: 'skills'
 })
 
+// sending only necessary data from user collection.
+technologySchema.methods.toJSON = function () {
+  const technology = this
+  const technologyObject = technology.toObject()
+  delete technologyObject.createdAt
+  delete technologyObject.updatedAt
+  delete technologyObject.__v
+  return technologyObject
+}
+
 const Technology = mongoose.model('Technology', technologySchema)
 
 module.exports = Technology
