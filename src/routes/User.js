@@ -1,19 +1,32 @@
 const express = require('express')
 const router = new express.Router()
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 const User = require('../models/User')
 const userAuth = require('../auth/UserAuth')
+const adminAuth = require('../auth/AdminAuth')
 const UserController = require('../controllers/UserController')
 
-// to create a user // User Registation
-router.post('/users', UserController.checkIfUserExist, async (req, res) => {
+// to create a user
+router.post('/users', adminAuth, UserController.checkIfUserExist, async (req, res) => {
+  const user = new User(req.body)
+  try {
+    await user.save()
+    res.status(201).send("User created successfully")
+  } catch (error) {
+    throw new Error(error)
+  }
+})
+
+// for user egistation
+router.post('/users/register', UserController.checkIfUserExist, async (req, res) => {
   const user = new User(req.body)
   try {
     await user.save()
     const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY)
     res.status(201).json({
       status: 201,
-      token: token
+      token: token,
     })
   } catch (error) {
     throw new Error(error)
@@ -27,7 +40,7 @@ router.post('/users/login', UserController.verifyUser, async (req, res) => {
     const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY)
     res.status(200).json({
       status: 200,
-      token: token
+      token: token,
     })
   } catch (error) {
     throw new Error(error)
@@ -36,8 +49,14 @@ router.post('/users/login', UserController.verifyUser, async (req, res) => {
 
 // to get all the users
 // GET /users?sortBy=createdAt:desc
-router.get('/users', async (req, res) => {
+// GET /users?role=admin  (to filter users by role)
+router.get('/users', adminAuth, async (req, res) => {
   const sort = {}
+  const match = {}
+
+  if (req.query.role) {
+    match.role = req.query.role
+  }
 
   if (req.query.sortBy) {
     const parts = req.query.sortBy.split(':')
@@ -45,8 +64,57 @@ router.get('/users', async (req, res) => {
   }
 
   try {
-    const users = await User.find().sort(sort)
+    const users = await User.find(match).sort(sort).populate({
+      path: 'workProfile',
+      select: '_id, skills, technology',
+    })
     res.status(200).json(users)
+  } catch (error) {
+    throw new Error(error)
+  }
+})
+
+// update user by id.
+router.patch('/users/:id', adminAuth, async (req, res, next) => {
+  const updates = Object.keys(req.body)
+  const allowedUpdates = ['name', 'email', 'address', 'phone', 'password', 'username']
+  const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+  if (!isValidOperation) {
+    return res.status(400).send({ error: 'Invalid updates!' })
+  }
+
+  try {
+    const user = await User.findById(req.params.id)
+
+    if (!user) {
+      let error = new Error('User not found!')
+      error.status = 404
+      return next(error)
+    }
+
+    updates.forEach((update) => (user[update] = req.body[update]))
+
+    await user.save()
+
+    res.status(200).json("User updated successfully")
+  } catch (error) {
+    throw new Error(error)
+  }
+})
+
+// delete user by id.
+router.delete('/users/:id', adminAuth, async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id)
+    // await Booking.deleteMany({ user: req.params.id })
+    // await Review.deleteMany({ user: req.params.id })
+
+    if (!user) {
+      let error = new Error('User not found!')
+      error.status = 404
+      return next(error)
+    }
+    res.status(200).send('User deleted successfully')
   } catch (error) {
     throw new Error(error)
   }
@@ -61,9 +129,7 @@ router.get('/users/me', userAuth, async (req, res) => {
 router.put('/users/me', userAuth, async (req, res, next) => {
   const updates = Object.keys(req.body)
   const allowedUpdates = ['name', 'email', 'address', 'phone', 'username']
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  )
+  const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
   if (!isValidOperation) {
     let error = new Error('Invalid updates!')
     error.status = 400
@@ -84,9 +150,7 @@ router.put('/users/me', userAuth, async (req, res, next) => {
 router.patch('/users/me/change-password', userAuth, async (req, res, next) => {
   const updates = Object.keys(req.body)
   const allowedUpdates = ['oldpassword', 'newpassword']
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  )
+  const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
   if (!isValidOperation) {
     let error = new Error('Invalid updates!')
     error.status = 400

@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     username: {
       type: String,
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
       minlength: 6,
-      lowercase: true
+      lowercase: true,
     },
     email: {
       type: String,
@@ -27,64 +27,63 @@ const userSchema = new mongoose.Schema(
         if (!validator.isEmail(value)) {
           throw new Error('Email is invalid!')
         }
-      }
+      },
     },
     phone: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     address: {
       type: String,
-      required: true
+      required: true,
     },
     password: {
       type: String,
       required: true,
       trim: true,
-      minlength: 6
+      minlength: 6,
     },
     image: {
       type: String,
-      default: ''
+      default: '',
     },
     role: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       required: true,
-      ref: 'Role'
     }
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 )
 
 userSchema.virtual('WorkProfiles', {
   ref: 'WorkProfile',
   localField: '_id',
-  foreignField: 'benongs_to'
+  foreignField: 'belongs_to'
 })
 
 userSchema.virtual('Jobs', {
   ref: 'Job',
   localField: '_id',
-  foreignField: 'posted_by'
+  foreignField: 'posted_by',
 })
 
 userSchema.virtual('Jobs', {
   ref: 'Job',
   localField: '_id',
-  foreignField: 'taken_by'
+  foreignField: 'taken_by',
 })
 
 userSchema.virtual('Bids', {
   ref: 'Bid',
   localField: '_id',
-  foreignField: 'bidder'
+  foreignField: 'bidder',
 })
 
 // sending only necessary data from user collection.
-userSchema.methods.toJSON = function() {
+userSchema.methods.toJSON = function () {
   const user = this
   const userObject = user.toObject()
   delete userObject.password
@@ -95,7 +94,7 @@ userSchema.methods.toJSON = function() {
 }
 
 // Hashing the plain text password before saving.
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   const user = this
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8)

@@ -3,6 +3,7 @@ require('./db/DbConfig')
 require('dotenv').config();
 const cors = require('cors')
 const morgan = require('morgan')
+const adminRouter = require('./routes/Admin')
 const userRouter = require('./routes/User')
 const skillRouter = require('./routes/Skill')
 const technologyRouter = require('./routes/Technology')
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/public', express.static('public'))
 
 // Ruoters
+app.use(adminRouter)
 app.use(userRouter)
 app.use(skillRouter)
 app.use(technologyRouter)
