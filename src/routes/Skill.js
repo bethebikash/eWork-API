@@ -58,12 +58,13 @@ router.patch(
         let error = new Error('Skill not found!')
         error.status = 404
         return next(error)
+      } else {
+        skill.skill = req.body.skill
+
+        await skill.save()
+        res.status(200).send("Skill updated successfully")
       }
-
-      skill.skill = req.body.skill
-
-      await skill.save()
-      res.status(200).send("Skill updated successfully")
+      
     } catch (error) {
       throw new Error(error)
     }

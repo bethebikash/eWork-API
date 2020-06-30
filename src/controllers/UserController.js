@@ -1,13 +1,14 @@
 const User = require('../models/User')
 const bcrypt = require('bcryptjs')
+const WorkProfile = require('../models/WorkProfile')
 
 const checkIfUserExist = async (req, res, next) => {
   const user = await User.findOne({
-    email: req.body.email,
+    email: req.body.email
   })
   if (user === null) {
     const user = await User.findOne({
-      username: req.body.username,
+      username: req.body.username
     })
     if (user === null) {
       next()
@@ -43,7 +44,21 @@ const verifyUser = async (req, res, next) => {
   }
 }
 
+const checkIfWorkProfileExist = async (req, res, next) => {
+  const workProfile = await WorkProfile.findOne({
+    belongs_to: req.body.belongs_to
+  })
+  if (workProfile === null) {
+    next()
+  } else {
+    let error = new Error('Work Profile is already added')
+    error.status = 409
+    return next(error)
+  }
+}
+
 module.exports = {
   checkIfUserExist,
-  verifyUser
+  verifyUser,
+  checkIfWorkProfileExist,
 }

@@ -5,29 +5,35 @@ const workProfileSchema = new mongoose.Schema(
     rate: {
       type: Number,
       required: true,
-      trim: true
+      trim: true,
     },
-    skills: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Skill'
-    }],
-    technologies: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Technology'
-    }],
+    skills: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Skill',
+        require: true,
+      },
+    ],
+    technologies: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Technology',
+        require: true,
+      },
+    ],
     belongs_to: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: 'User'
-    }
+      ref: 'User',
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 )
 
 // sending only necessary data from category collection.
-workProfileSchema.methods.toJSON = function() {
+workProfileSchema.methods.toJSON = function () {
   const workProfile = this
   const workProfileObject = workProfile.toObject()
   delete workProfileObject.createdAt

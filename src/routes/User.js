@@ -64,10 +64,7 @@ router.get('/users', adminAuth, async (req, res) => {
   }
 
   try {
-    const users = await User.find(match).sort(sort).populate({
-      path: 'workProfile',
-      select: '_id, skills, technology',
-    })
+    const users = await User.find(match).sort(sort)
     res.status(200).json(users)
   } catch (error) {
     throw new Error(error)
@@ -90,13 +87,14 @@ router.patch('/users/:id', adminAuth, async (req, res, next) => {
       let error = new Error('User not found!')
       error.status = 404
       return next(error)
+    } else{
+
+      updates.forEach((update) => (user[update] = req.body[update]))
+      
+      await user.save()
+      res.status(200).json("User updated successfully")
     }
 
-    updates.forEach((update) => (user[update] = req.body[update]))
-
-    await user.save()
-
-    res.status(200).json("User updated successfully")
   } catch (error) {
     throw new Error(error)
   }

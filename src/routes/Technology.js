@@ -57,12 +57,12 @@ router.patch(
         let error = new Error('Technology not found!')
         error.status = 404
         return next(error)
+      } else{
+        technology.technology = req.body.technology
+
+        await technology.save()
+        res.status(200).send("Technology updated successfully")
       }
-
-      technology.technology = req.body.technology
-
-      await technology.save()
-      res.status(200).send("Technology updated successfully")
     } catch (error) {
       throw new Error(error)
     }
