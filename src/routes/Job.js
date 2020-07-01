@@ -15,15 +15,21 @@ router.post('/jobs', async (req, res) => {
   }
 })
 
-// to get all services
+// to get all jobs
 // GET /jobs?sortBy=createdAt:desc
 // GET /jobs?status= available  (to filter jobs by status)
+// GET /jobs?posted_by= userId  (to filter jobs by User)
+// GET /jobs?taken_by= userId  (to filter jobs by User)
 router.get('/jobs', async (req, res) => {
   const sort = {}
   const match = {}
 
   if (req.query.status) {
     match.status = req.query.status
+  } else if (req.query.posted_by) {
+    match.posted_by = req.query.posted_by
+  } else if (req.query.taken_by) {
+    match.taken_by = req.query.taken_by
   }
 
   if (req.query.sortBy) {
@@ -153,7 +159,7 @@ router.patch(
   }
 )
 
-// delete skill by id.
+// delete jobs by id.
 router.delete('/jobs/:id', async (req, res, next) => {
   try {
     const job = await Job.findByIdAndDelete(req.params.id)

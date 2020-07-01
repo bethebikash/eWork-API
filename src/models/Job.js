@@ -31,6 +31,7 @@ const jobSchema = new mongoose.Schema(
     taken_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
+      default: null
     },
   },
   {
