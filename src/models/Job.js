@@ -19,6 +19,10 @@ const jobSchema = new mongoose.Schema(
       required: true,
       default: 'available'
     },
+    file: {
+      type: String,
+      default: ''
+    },
     posted_by: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -26,7 +30,7 @@ const jobSchema = new mongoose.Schema(
     },
     taken_by: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Role',
+      ref: 'User',
     },
   },
   {
@@ -39,6 +43,16 @@ jobSchema.virtual('Bids', {
   localField: '_id',
   foreignField: 'job'
 })
+
+// sending only necessary data from user collection.
+jobSchema.methods.toJSON = function () {
+  const job = this
+  const jobObject = job.toObject()
+  delete jobObject.createdAt
+  delete jobObject.updatedAt
+  delete jobObject.__v
+  return jobObject
+}
 
 const Job = mongoose.model('Job', jobSchema)
 
