@@ -115,7 +115,7 @@ router.patch(
 
 // job file upload
 const storage = multer.diskStorage({
-  destination: './public/uploads',
+  destination: './public/uploads/jobs',
   filename: (req, file, callback) => {
     let ext = path.extname(file.originalname)
     callback(null, `${file.fieldname}-${Date.now()}${ext}`)
@@ -147,9 +147,20 @@ router.patch(
         error.status = 404
         return next(error)
       } else {
-      console.log(req.file)
+
+        const filePath = job.file
+
+        if (filePath){
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error(err)
+            }
+            console.log('file removed')
+          })
+        }
 
         job.file = req.file.path
+        job.status = "verify"
         await job.save()
         res.status(200).send("File Uploded Successfully")
       }
@@ -162,7 +173,8 @@ router.patch(
 // delete jobs by id.
 router.delete('/jobs/:id', async (req, res, next) => {
   try {
-    const job = await Job.findByIdAndDelete(req.params.id)
+
+    const job = Job.findById(req.params.id)
 
     if (!job) {
       let error = new Error('Job not found!')
@@ -170,7 +182,27 @@ router.delete('/jobs/:id', async (req, res, next) => {
       return next(error)
     }
     
-    res.send('Job deleted successfully')
+    if(job.status === 'available' || job.status === 'completed'){
+      await Job.findByIdAndDelete(req.params.id)
+
+      const fPath = job.file
+
+      if (fPath){
+        fs.unlink(fPath, (err) => {
+          if (err) {
+            console.error(err)
+          }
+          console.log('file removed')
+        })
+      }
+      res.send('Job deleted successfully')
+    } else{
+      let error = new Error('You can not delete ungoing job')
+      error.status = 403
+      return next(error)
+    }
+
+
   } catch (error) {
     throw new Error(error)
   }

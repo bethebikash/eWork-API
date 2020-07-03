@@ -6,6 +6,9 @@ const User = require('../models/User')
 const userAuth = require('../auth/UserAuth')
 const adminAuth = require('../auth/AdminAuth')
 const UserController = require('../controllers/UserController')
+const multer = require('multer')
+const path = require('path')
+const fs = require('fs')
 
 // to create a user
 router.post('/users', adminAuth, UserController.checkIfUserExist, async (req, res) => {
@@ -172,5 +175,51 @@ router.patch('/users/me/change-password', userAuth, async (req, res, next) => {
     throw new Error(error)
   }
 })
+
+// User profile photo upload
+const storage = multer.diskStorage({
+  destination: './public/uploads/users',
+  filename: (req, file, callback) => {
+    let ext = path.extname(file.originalname)
+    callback(null, `${file.fieldname}-${Date.now()}${ext}`)
+  }
+})
+
+const imageFileFilter = (req, file, cb) => {
+  if (!file.originalname.match(/\.(JPG|JPEG|jpg|jpeg|PNG|png|GIF|gif)$/)) {
+    return cb(new Error('Please provide an Image file.'), false)
+  }
+  cb(null, true)
+}
+
+const upload = multer({
+  storage: storage,
+  fileFilter: imageFileFilter
+})
+
+router.post(
+  '/users/me/upload',
+  userAuth,
+  upload.single('image'),
+  async (req, res) => {
+    const imagePath = req.user.image
+
+    if (imagePath){
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error(err)
+        }
+        console.log('file removed')
+      })
+    }
+
+    req.user.image = req.file.path
+    await req.user.save()
+    res.status(200).send('Picture uploaded successfully')
+  },
+  (error, req, res, next) => {
+    throw new Error(error)
+  }
+)
 
 module.exports = router

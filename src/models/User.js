@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
+const { Binary } = require('mongodb')
 
 const userSchema = new mongoose.Schema(
   {
@@ -46,7 +47,7 @@ const userSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: '',
+      default: null
     },
     role: {
       type: String,
