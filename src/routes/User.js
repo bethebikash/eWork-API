@@ -9,6 +9,7 @@ const UserController = require('../controllers/UserController')
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs')
+const WorkProfile = require('../models/WorkProfile')
 
 // to create a user
 router.post('/users', adminAuth, UserController.checkIfUserExist, async (req, res) => {
@@ -107,8 +108,7 @@ router.patch('/users/:id', adminAuth, async (req, res, next) => {
 router.delete('/users/:id', adminAuth, async (req, res, next) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id)
-    // await Booking.deleteMany({ user: req.params.id })
-    // await Review.deleteMany({ user: req.params.id })
+    await WorkProfile.findByIdAndDelete({ belongs_to: req.params.id })
 
     if (!user) {
       let error = new Error('User not found!')
