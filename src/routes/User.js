@@ -29,7 +29,6 @@ router.post('/users/register', UserController.checkIfUserExist, async (req, res)
     await user.save()
     const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY)
     res.status(201).json({
-      status: 201,
       token: token,
     })
   } catch (error) {
@@ -43,8 +42,7 @@ router.post('/users/login', UserController.verifyUser, async (req, res) => {
   try {
     const token = jwt.sign({ _id: user._id }, process.env.SECRET_KEY)
     res.status(200).json({
-      status: 200,
-      token: token,
+      token: token
     })
   } catch (error) {
     throw new Error(error)
