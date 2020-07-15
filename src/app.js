@@ -34,7 +34,7 @@ app.use((error, req, res, next) => {
   res.json({
     error: {
       status: error.status || 500,
-      error: error.message
+      message: error.message
     }
   })
 })
