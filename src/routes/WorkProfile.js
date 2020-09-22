@@ -61,7 +61,7 @@ router.get('/work-profiles/belongs_to/:id', async (req, res) => {
     })
     .populate({
       path: 'belongs_to',
-      select: '_id, name'
+      select: '_id, name, image'
     })
     res.status(200).json(workProfile)
   } catch (error) {

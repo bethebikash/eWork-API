@@ -3,6 +3,8 @@ const router = new express.Router()
 const multer = require('multer')
 const path = require('path')
 const Job = require('../models/Job')
+const fs = require('fs')
+
 
 // to create a job
 router.post('/jobs', async (req, res) => {
@@ -42,11 +44,11 @@ router.get('/jobs', async (req, res) => {
       .sort(sort)
       .populate({
         path: 'posted_by',
-        select: '_id, name'
+        select: '_id, name',
       })
       .populate({
         path: 'taken_by',
-        select: '_id, name'
+        select: '_id, name',
       })
     res.status(200).json(jobs)
   } catch (error) {
@@ -60,11 +62,11 @@ router.get('/jobs/:id', async (req, res, next) => {
     const job = await Job.findById(req.params.id)
       .populate({
         path: 'posted_by',
-        select: '_id, name'
+        select: '_id, name',
       })
       .populate({
         path: 'taken_by',
-        select: '_id, name'
+        select: '_id, name',
       })
     if (!job) {
       let error = new Error('Job not found!')
@@ -78,40 +80,33 @@ router.get('/jobs/:id', async (req, res, next) => {
 })
 
 // update job by id.
-router.patch(
-  '/jobs/:id',
-  async (req, res, next) => {
-    const updates = Object.keys(req.body)
-    const allowedUpdates = ['title','description','status','taken_by']
-    const isValidOperation = updates.every((update) =>
-      allowedUpdates.includes(update)
-    )
-    if (!isValidOperation) {
-      let error = new Error('Invalid updates!')
-      error.status = 400
-      return next(error)
-    }
-
-    try {
-      const job = await Job.findById(req.params.id)
-
-      if (!job) {
-        let error = new Error('Job not found!')
-        error.status = 404
-        return next(error)
-      } else {
-
-        updates.forEach((update) => (job[update] = req.body[update]))
-
-        await job.save()
-        res.status(200).send("Job updated successfully")
-      }
-
-    } catch (error) {
-      throw new Error(error)
-    }
+router.patch('/jobs/:id', async (req, res, next) => {
+  const updates = Object.keys(req.body)
+  const allowedUpdates = ['title', 'description', 'status', 'taken_by']
+  const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+  if (!isValidOperation) {
+    let error = new Error('Invalid updates!')
+    error.status = 400
+    return next(error)
   }
-)
+
+  try {
+    const job = await Job.findById(req.params.id)
+
+    if (!job) {
+      let error = new Error('Job not found!')
+      error.status = 404
+      return next(error)
+    } else {
+      updates.forEach((update) => (job[update] = req.body[update]))
+
+      await job.save()
+      res.status(200).send('Job updated successfully')
+    }
+  } catch (error) {
+    throw new Error(error)
+  }
+})
 
 // job file upload
 const storage = multer.diskStorage({
@@ -119,7 +114,7 @@ const storage = multer.diskStorage({
   filename: (req, file, callback) => {
     let ext = path.extname(file.originalname)
     callback(null, `${file.fieldname}-${Date.now()}${ext}`)
-  }
+  },
 })
 
 const jobFileFilter = (req, file, cb) => {
@@ -132,62 +127,56 @@ const jobFileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage: storage,
-  fileFilter: jobFileFilter
+  fileFilter: jobFileFilter,
 })
 
-router.patch(
-  '/jobs/upload/:id',
-  upload.single('jobFile'),
-  async (req, res) => {
-    try {
-      const job = await Job.findById(req.params.id)
+router.patch('/jobs/upload/:id', upload.single('jobFile'), async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id)
 
-      if (!job) {
-        let error = new Error('Job not found!')
-        error.status = 404
-        return next(error)
-      } else {
+    if (!job) {
+      let error = new Error('Job not found!')
+      error.status = 404
+      return next(error)
+    } else {
+      const filePath = job.file
 
-        const filePath = job.file
-
-        if (filePath){
-          fs.unlink(filePath, (err) => {
-            if (err) {
-              console.error(err)
-            }
-            console.log('file removed')
-          })
-        }
-
-        job.file = req.file.path
-        job.status = "verify"
-        await job.save()
-        res.status(200).send("File Uploded Successfully")
+      if (filePath) {
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.error(err)
+          }
+          console.log('file removed')
+        })
       }
-    } catch (error) {
-      throw new Error(error)
+
+      job.file = req.file.path
+      job.status = 'verify'
+      await job.save()
+      res.status(200).send('File Uploded Successfully')
     }
+  } catch (error) {
+    throw new Error(error)
   }
-)
+})
 
 // delete jobs by id.
 router.delete('/jobs/:id', async (req, res, next) => {
   try {
-
-    const job = Job.findById(req.params.id)
+    const job = await Job.findById(req.params.id)
 
     if (!job) {
       let error = new Error('Job not found!')
       error.status = 404
       return next(error)
     }
-    
-    if(job.status === 'available' || job.status === 'completed'){
+
+    if (job.status === 'available' || job.status === 'completed') {
       await Job.findByIdAndDelete(req.params.id)
 
       const fPath = job.file
 
-      if (fPath){
+      if (fPath) {
         fs.unlink(fPath, (err) => {
           if (err) {
             console.error(err)
@@ -196,13 +185,11 @@ router.delete('/jobs/:id', async (req, res, next) => {
         })
       }
       res.send('Job deleted successfully')
-    } else{
+    } else {
       let error = new Error('You can not delete ungoing job')
       error.status = 403
       return next(error)
     }
-
-
   } catch (error) {
     throw new Error(error)
   }

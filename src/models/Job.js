@@ -49,7 +49,6 @@ jobSchema.virtual('Bids', {
 jobSchema.methods.toJSON = function () {
   const job = this
   const jobObject = job.toObject()
-  delete jobObject.createdAt
   delete jobObject.updatedAt
   delete jobObject.__v
   return jobObject
