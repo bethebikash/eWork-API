@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require('path')
 require('./db/DbConfig')
 require('dotenv').config();
 const cors = require('cors')
@@ -24,6 +25,14 @@ app.use(technologyRouter)
 app.use(workProfileRouter)
 app.use(jobRouter)
 app.use(bidRouter)
+
+app.get('/', (req, res) => {
+  try {
+    res.status(200).sendFile(path.join(__dirname + '/..//public/index.html'));
+  } catch (error) {
+    throw new Error(error)
+  }
+})
 
 app.use((error, req, res, next) => {
   console.error(error.stack)
