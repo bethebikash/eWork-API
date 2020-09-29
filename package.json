@@ -6,13 +6,16 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "db-seed": "node src/seeders/Admin.js"
+    "db-seed": "node src/seeders/Admin.js",
+    "test": "jest"
   },
   "author": "Biaksh Bhattarai",
   "license": "MIT",
   "devDependencies": {
+    "jest": "^26.4.2",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "supertest": "^5.0.0"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
